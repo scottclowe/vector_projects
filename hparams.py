@@ -882,7 +882,13 @@ def get_hparams(model, dataset, actfun, seed, epochs, search=False, hp_idx=None,
     rng = np.random.RandomState(seed)
     if epochs == 10:
         if oneshot:
-            b = _TEST_BOUNDS[model][dataset][actfun]
+            if actfun in _TEST_BOUNDS[model][dataset]:
+                b = _TEST_BOUNDS[model][dataset][actfun]
+            elif actfun[0] == "n" and actfun[1:] in _TEST_BOUNDS[model][dataset]:
+                print("Using hparams discovered for {} instead of {}".format(actfun[1:], actfun))
+                b = _TEST_BOUNDS[model][dataset][actfun[1:]]
+            else:
+                raise ValueError()
         elif actfun in _BOUNDS10[model][dataset]:
             b = _BOUNDS10[model][dataset][actfun]
         elif actfun[0] == "n" and actfun[1:] in _BOUNDS10[model][dataset]:
