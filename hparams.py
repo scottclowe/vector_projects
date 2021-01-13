@@ -883,12 +883,29 @@ def get_hparams(model, dataset, actfun, seed, epochs, search=False, hp_idx=None,
     if epochs == 10:
         if oneshot:
             b = _TEST_BOUNDS[model][dataset][actfun]
-        else:
+        elif actfun in _BOUNDS10[model][dataset]:
             b = _BOUNDS10[model][dataset][actfun]
+        elif actfun[0] == "n" and actfun[1:] in _BOUNDS10[model][dataset]:
+            print("Using hparams discovered for {} instead of {}".format(actfun[1:], actfun))
+            b = _BOUNDS10[model][dataset][actfun[1:]]
+        else:
+            raise ValueError()
     elif epochs == 50:
-        b = _BOUNDS50[model][dataset][actfun]
+        if actfun in _BOUNDS50[model][dataset]:
+            b = _BOUNDS50[model][dataset][actfun]
+        elif actfun[0] == "n" and actfun[1:] in _BOUNDS50[model][dataset]:
+            print("Using hparams discovered for {} instead of {}".format(actfun[1:], actfun))
+            b = _BOUNDS50[model][dataset][actfun[1:]]
+        else:
+            raise ValueError()
     elif epochs == 100:
-        b = _BOUNDS100[model][dataset][actfun]
+        if actfun in _BOUNDS100[model][dataset]:
+            b = _BOUNDS100[model][dataset][actfun]
+        elif actfun[0] == "n" and actfun[1:] in _BOUNDS100[model][dataset]:
+            print("Using hparams discovered for {} instead of {}".format(actfun[1:], actfun))
+            b = _BOUNDS100[model][dataset][actfun[1:]]
+        else:
+            raise ValueError()
 
     if search:
         hparams = {"beta1": 1 - np.power(10., rng.uniform(b['beta1'][0], b['beta1'][1])),
